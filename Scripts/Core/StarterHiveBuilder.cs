@@ -5,6 +5,9 @@ public class StarterHiveBuilder : MonoBehaviour
     // We automatically find the Grid, so you only need to assign these prefabs!
     public GameObject antPrefab;
     public GameObject queenPrefab;
+    
+    [Header("Economy Prefabs")]
+    public GameObject foodStoragePrefab;
 
     public int chamberSize = 3;
     public int tunnelLength = 6;
@@ -22,6 +25,7 @@ public class StarterHiveBuilder : MonoBehaviour
         RevealInitialArea();
         PlaceQueen();
         SpawnAnts();
+        SetupEconomy();
     }
 
     void BuildHive()
@@ -137,6 +141,29 @@ public class StarterHiveBuilder : MonoBehaviour
             Vector2 offset = Random.insideUnitCircle * 1.5f;
             Vector3 spawnPos = Vector3.zero;
             Instantiate(antPrefab, spawnPos + (Vector3)offset, Quaternion.identity);
+        }
+    }
+
+    void SetupEconomy()
+    {
+        // 1. Create Food Storage near Queen
+        if (foodStoragePrefab != null)
+        {
+            Instantiate(foodStoragePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogWarning("FoodStorage cannot be spawned: foodStoragePrefab is missing!");
+        }
+
+        // 2. Start Food Spawner (Now expected to be placed manually in the scene, e.g., on GameManager)
+        if (FoodSpawner.Instance != null)
+        {
+            FoodSpawner.Instance.SpawnInitialFood();
+        }
+        else
+        {
+            Debug.LogWarning("FoodSpawner instance not found! Please attach the FoodSpawner script to your GameManager.");
         }
     }
 }

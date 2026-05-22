@@ -13,10 +13,6 @@ public class FoodStorage : MonoBehaviour
     {
         Instance = this;
         sr = GetComponent<SpriteRenderer>();
-        if (sr == null)
-        {
-            sr = gameObject.AddComponent<SpriteRenderer>();
-        }
         initialScale = transform.localScale;
     }
 

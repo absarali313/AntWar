@@ -463,20 +463,25 @@ public class Ant : MonoBehaviour
     void FindFood()
     {
         targetFood = null;
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 15f); // Search radius
+        if (FoodSpawner.Instance == null) return;
 
         float bestDist = float.MaxValue;
+        float searchRadius = 15f;
 
-        foreach (var h in hits)
+        foreach (Food f in FoodSpawner.Instance.activeFoodPiles)
         {
-            Food f = h.GetComponent<Food>();
             if (f != null && !f.isDepleted)
             {
                 float d = Vector2.Distance(transform.position, f.transform.position);
-                if (d < bestDist)
+                if (d <= searchRadius && d < bestDist)
                 {
-                    bestDist = d;
-                    targetFood = f;
+                    // Check if path is actually possible (prevent getting stuck trying to reach unreachable food)
+                    Vector2Int gridPos = GridManager.Instance.WorldToGrid(f.transform.position);
+                    if (GridManager.Instance.IsWalkable(gridPos))
+                    {
+                        bestDist = d;
+                        targetFood = f;
+                    }
                 }
             }
         }

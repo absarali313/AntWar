@@ -5,19 +5,22 @@ public class FoodSpawner : MonoBehaviour
 {
     public static FoodSpawner Instance;
 
+    [Header("Spawning Settings")]
     public float spawnInterval = 30f;
-    private float spawnTimer = 0f;
     public int maxFoodPiles = 10;
+    public int initialFoodCount = 3;
+    public float spawnRadius = 8f;
     
-    private List<Food> activeFoodPiles = new List<Food>();
-    
-    // For runtime generation since we don't have a prefab yet
-    private Sprite circleSprite;
+    [Header("Prefabs")]
+    public GameObject foodPrefab;
 
+    private float spawnTimer = 0f;
+    
+    public List<Food> activeFoodPiles = new List<Food>();
+    
     void Awake()
     {
         Instance = this;
-        CreateCircleSprite();
     }
 
     void Update()
@@ -37,7 +40,7 @@ public class FoodSpawner : MonoBehaviour
 
     public void SpawnInitialFood()
     {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < initialFoodCount; i++)
         {
             SpawnFoodNearColony();
         }
@@ -52,7 +55,7 @@ public class FoodSpawner : MonoBehaviour
         // Try up to 10 times to find a valid walkable spot near the queen
         for (int i = 0; i < 10; i++)
         {
-            Vector2 randomOffset = Random.insideUnitCircle * 8f; // spawn within 8 units
+            Vector2 randomOffset = Random.insideUnitCircle * spawnRadius; // spawn within given radius
             Vector2 attemptPos = queenPos + randomOffset;
             
             Vector2Int gridPos = GridManager.Instance.WorldToGrid(attemptPos);
@@ -68,19 +71,15 @@ public class FoodSpawner : MonoBehaviour
 
     private void CreateFoodPile(Vector2 position)
     {
-        GameObject foodObj = new GameObject("FoodPile");
-        foodObj.transform.position = position;
-        
-        SpriteRenderer sr = foodObj.AddComponent<SpriteRenderer>();
-        sr.sprite = circleSprite;
-        sr.color = new Color(0.8f, 0.2f, 0.2f); // Berry-like red color
-        sr.sortingOrder = 1;
+        if (foodPrefab == null)
+        {
+            Debug.LogWarning("FoodSpawner cannot spawn food: foodPrefab is missing!");
+            return;
+        }
 
-        CircleCollider2D col = foodObj.AddComponent<CircleCollider2D>();
-        col.isTrigger = true;
-        col.radius = 0.4f;
-
-        Food food = foodObj.AddComponent<Food>();
+        GameObject foodObj = Instantiate(foodPrefab, position, Quaternion.identity);
+        Food food = foodObj.GetComponent<Food>();
+        if (food == null) food = foodObj.AddComponent<Food>();
         
         // Randomize type: 70% berry(3), 20% meat(8), 10% crumb(1)
         int rand = Random.Range(0, 100);
@@ -93,30 +92,4 @@ public class FoodSpawner : MonoBehaviour
         activeFoodPiles.Add(food);
     }
 
-    private void CreateCircleSprite()
-    {
-        // Programmatically generate a simple circle sprite for the food
-        int size = 32;
-        Texture2D texture = new Texture2D(size, size);
-        Color[] pixels = new Color[size * size];
-        
-        float r = size / 2f;
-        Vector2 center = new Vector2(r, r);
-        
-        for (int y = 0; y < size; y++)
-        {
-            for (int x = 0; x < size; x++)
-            {
-                if (Vector2.Distance(center, new Vector2(x, y)) <= r)
-                    pixels[y * size + x] = Color.white;
-                else
-                    pixels[y * size + x] = Color.clear;
-            }
-        }
-        
-        texture.SetPixels(pixels);
-        texture.Apply();
-        
-        circleSprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 32f);
-    }
 }

@@ -402,7 +402,6 @@ GameObject:
   - component: {fileID: 760958358}
   - component: {fileID: 760958359}
   - component: {fileID: 760958360}
-  - component: {fileID: 760958361}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -485,23 +484,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec0d65bffe3a34b2a9d21c79604550f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DigCommandManager
---- !u!114 &760958361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 760958354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f28e8623917ca4fe6b8c48325e5b622c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FoodSpawner
-  spawnInterval: 30
-  maxFoodPiles: 10
-  initialFoodCount: 3
-  spawnRadius: 8
-  foodPrefab: {fileID: 0}
 --- !u!1 &875455039
 GameObject:
   m_ObjectHideFlags: 0
@@ -622,8 +604,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StarterHiveBuilder
   antPrefab: {fileID: 4159313562340415786, guid: e7726970eeacf4e448c5f7b8e3775a11, type: 3}
   queenPrefab: {fileID: 8525088178857564835, guid: 26877b110b1b1430da6f3d6b1c13a1a8, type: 3}
-  foodStoragePrefab: {fileID: 0}
-  foodSpawnerPrefab: {fileID: 0}
   chamberSize: 3
   tunnelLength: 6
   workerCount: 5
