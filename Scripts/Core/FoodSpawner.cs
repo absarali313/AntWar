@@ -9,7 +9,6 @@ public class FoodSpawner : MonoBehaviour
     public float spawnInterval = 30f;
     public int maxFoodPiles = 10;
     public int initialFoodCount = 3;
-    public float spawnRadius = 8f;
     
     [Header("Prefabs")]
     public GameObject foodPrefab;
@@ -48,22 +47,28 @@ public class FoodSpawner : MonoBehaviour
 
     private void SpawnFoodNearColony()
     {
-        if (GridManager.Instance == null || Queen.Instance == null) return;
-
-        Vector2 queenPos = Queen.Instance.transform.position;
+        if (GridManager.Instance == null || GridManager.Instance.walkableTiles.Count == 0) return;
         
-        // Try up to 10 times to find a valid walkable spot near the queen
+        // Try up to 10 times to find a random walkable spot
         for (int i = 0; i < 10; i++)
         {
-            Vector2 randomOffset = Random.insideUnitCircle * spawnRadius; // spawn within given radius
-            Vector2 attemptPos = queenPos + randomOffset;
+            Vector2Int randomGridPos = GridManager.Instance.walkableTiles[Random.Range(0, GridManager.Instance.walkableTiles.Count)];
+            Vector2 attemptPos = GridManager.Instance.GridToWorld(randomGridPos.x, randomGridPos.y);
             
-            Vector2Int gridPos = GridManager.Instance.WorldToGrid(attemptPos);
-            
-            if (GridManager.Instance.IsValid(gridPos.x, gridPos.y) && GridManager.Instance.IsWalkable(gridPos))
+            // Check if there's already food here to avoid stacking perfectly on top of each other
+            bool spotTaken = false;
+            foreach (Food f in activeFoodPiles)
             {
-                // Found a valid spot!
-                CreateFoodPile(GridManager.Instance.GridToWorld(gridPos.x, gridPos.y));
+                if (f != null && Vector2.Distance(f.transform.position, attemptPos) < 0.1f)
+                {
+                    spotTaken = true;
+                    break;
+                }
+            }
+
+            if (!spotTaken)
+            {
+                CreateFoodPile(attemptPos);
                 return;
             }
         }
@@ -81,13 +86,8 @@ public class FoodSpawner : MonoBehaviour
         Food food = foodObj.GetComponent<Food>();
         if (food == null) food = foodObj.AddComponent<Food>();
         
-        // Randomize type: 70% berry(3), 20% meat(8), 10% crumb(1)
-        int rand = Random.Range(0, 100);
-        int amount = 3;
-        if (rand > 90) amount = 1;
-        else if (rand > 70) amount = 8;
-        
-        food.Init(amount);
+        // Initialize using the prefab's preset amount
+        food.Init();
         
         activeFoodPiles.Add(food);
     }

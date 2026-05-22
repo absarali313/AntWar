@@ -106,3 +106,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Food
   foodAmount: 5
   isDepleted: 0
+  minScaleMultiplier: 1
+  maxScaleMultiplier: 1.5

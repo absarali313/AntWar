@@ -63,7 +63,14 @@ public class Tile : MonoBehaviour
 
     public void Dig()
     {
-        blocked = false;
+        if (blocked)
+        {
+            blocked = false;
+            if (GridManager.Instance != null)
+            {
+                GridManager.Instance.AddWalkableTile(gridPosition);
+            }
+        }
         UpdateVisual();
     }
 

@@ -4,9 +4,16 @@ public class Food : MonoBehaviour
 {
     public int foodAmount = 5;
     public bool isDepleted = false;
+
+    [Header("Visual Scaling")]
+    [Tooltip("How small the food visually gets right before it's fully depleted (multiplier)")]
+    public float minScaleMultiplier = 0.3f;
+    [Tooltip("How large the food is visually when completely full (multiplier)")]
+    public float maxScaleMultiplier = 1f;
     
     private SpriteRenderer sr;
     private Vector3 initialScale;
+    private int startingFoodAmount;
 
     void Awake()
     {
@@ -17,11 +24,13 @@ public class Food : MonoBehaviour
             sr = gameObject.AddComponent<SpriteRenderer>();
         }
         initialScale = transform.localScale;
+        startingFoodAmount = foodAmount;
     }
 
-    public void Init(int amount)
+    public void Init()
     {
-        foodAmount = amount;
+        // Reset to initial state
+        foodAmount = startingFoodAmount;
         isDepleted = false;
         gameObject.SetActive(true);
         UpdateVisual();
@@ -48,8 +57,9 @@ public class Food : MonoBehaviour
     private void UpdateVisual()
     {
         // Simple scale effect to make food look smaller as it's eaten
-        // Assuming max food pile is around 10 for scale reference
-        float scaleMultiplier = Mathf.Clamp((float)foodAmount / 10f, 0.3f, 1f);
+        if (startingFoodAmount <= 0) return;
+        float ratio = Mathf.Clamp01((float)foodAmount / (float)startingFoodAmount);
+        float scaleMultiplier = Mathf.Lerp(minScaleMultiplier, maxScaleMultiplier, ratio);
         transform.localScale = initialScale * scaleMultiplier;
     }
 }

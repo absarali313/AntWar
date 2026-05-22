@@ -42,7 +42,7 @@ public class Ant : MonoBehaviour
     // Food collection
     private Food targetFood;
     private int carryingFoodAmount = 0;
-    private int carryCapacity = 3;
+    private int carryCapacity = 1;
 
     void Start()
     {

@@ -6,13 +6,16 @@ public class FoodStorage : MonoBehaviour
 
     public int totalFood = 0;
     
-    private SpriteRenderer sr;
+    [Header("Visual Settings")]
+    public float minScale = 1f;
+    public float maxScale = 2f;
+    public int foodAmountForMaxScale = 50;
+    
     private Vector3 initialScale;
 
     void Awake()
     {
         Instance = this;
-        sr = GetComponent<SpriteRenderer>();
         initialScale = transform.localScale;
     }
 
@@ -25,14 +28,15 @@ public class FoodStorage : MonoBehaviour
 
     private void UpdateVisual()
     {
-        if (sr != null)
+        // Calculate how close we are to the max food limit
+        float ratio = 0f;
+        if (foodAmountForMaxScale > 0)
         {
-            // Simple visual feedback: storage grows as it gets more food
-            float scaleMultiplier = 1f + Mathf.Clamp((float)totalFood / 50f, 0f, 1f); // Max 2x size
-            transform.localScale = initialScale * scaleMultiplier;
-            
-            // Turn slightly more green/yellow as it fills
-            sr.color = Color.Lerp(new Color(0.8f, 0.6f, 0.2f), new Color(0.3f, 0.8f, 0.3f), totalFood / 50f);
+            ratio = Mathf.Clamp01((float)totalFood / foodAmountForMaxScale);
         }
+
+        // Scale between minScale and maxScale
+        float currentScaleMultiplier = Mathf.Lerp(minScale, maxScale, ratio);
+        transform.localScale = initialScale * currentScaleMultiplier;
     }
 }

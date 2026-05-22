@@ -149,7 +149,7 @@ public class StarterHiveBuilder : MonoBehaviour
         // 1. Create Food Storage near Queen
         if (foodStoragePrefab != null)
         {
-            Instantiate(foodStoragePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            Instantiate(foodStoragePrefab, new Vector3(-3.163f, 0.73f, 0f), Quaternion.identity);
         }
         else
         {

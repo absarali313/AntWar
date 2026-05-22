@@ -17,6 +17,7 @@ public class GridManager : MonoBehaviour
     public GameObject tilePrefab;
 
     private Dictionary<Vector2Int, Tile> grid = new Dictionary<Vector2Int, Tile>();
+    public List<Vector2Int> walkableTiles = new List<Vector2Int>();
 
     void Start()
     {
@@ -135,5 +136,10 @@ public class GridManager : MonoBehaviour
             tile.Reveal();
             tile.UpdateFogVisual();
         }
+    }
+
+    public void AddWalkableTile(Vector2Int pos)
+    {
+        walkableTiles.Add(pos);
     }
 }
