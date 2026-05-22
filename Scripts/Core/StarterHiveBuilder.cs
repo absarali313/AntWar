@@ -8,6 +8,11 @@ public class StarterHiveBuilder : MonoBehaviour
     
     [Header("Economy Prefabs")]
     public GameObject foodStoragePrefab;
+    public GameObject nurseryPrefab;
+
+    [Header("Economy Positions")]
+    public Vector3 foodStoragePosition = new Vector3(-3.163f, 0.73f, 0f);
+    public Vector3 nurseryPosition = new Vector3(3.0f, 0.73f, 0f);
 
     public int chamberSize = 3;
     public int tunnelLength = 6;
@@ -149,11 +154,21 @@ public class StarterHiveBuilder : MonoBehaviour
         // 1. Create Food Storage near Queen
         if (foodStoragePrefab != null)
         {
-            Instantiate(foodStoragePrefab, new Vector3(-3.163f, 0.73f, 0f), Quaternion.identity);
+            Instantiate(foodStoragePrefab, foodStoragePosition, Quaternion.identity);
         }
         else
         {
             Debug.LogWarning("FoodStorage cannot be spawned: foodStoragePrefab is missing!");
+        }
+
+        // 2. Create Nursery
+        if (nurseryPrefab != null)
+        {
+            Instantiate(nurseryPrefab, nurseryPosition, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogWarning("Nursery cannot be spawned: nurseryPrefab is missing!");
         }
 
         // 2. Start Food Spawner (Now expected to be placed manually in the scene, e.g., on GameManager)

@@ -192,3 +192,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Queen
   health: 100
+  defaultEggPrefab: {fileID: 4066206585230221238, guid: 2373189d5b49841b0be986a14c9ead74, type: 3}
+  productionConfigs:
+  - type: 0
+    layingTime: 5
+    foodCost: 15
+    specificEggPrefab: {fileID: 0}
+  isLayingEgg: 0
+  layingProgress: 0

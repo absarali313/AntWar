@@ -12,7 +12,8 @@ public enum WorkerJob
     Digger,
     Idle,
     Returning,
-    FoodCollector
+    FoodCollector,
+    EggCarrier
 }
 
 public class Ant : MonoBehaviour
@@ -43,6 +44,10 @@ public class Ant : MonoBehaviour
     private Food targetFood;
     private int carryingFoodAmount = 0;
     private int carryCapacity = 1;
+
+    // Egg carrying
+    private Egg carriedEgg;
+    private Egg targetEgg;
 
     void Start()
     {
@@ -112,28 +117,49 @@ public class Ant : MonoBehaviour
             return;
         }
 
-        // 2. If carrying food, MUST deliver it
-        if (carryingFoodAmount > 0)
+        // 2. If carrying an egg, MUST deliver it
+        if (carriedEgg != null)
+        {
+            currentJob = WorkerJob.EggCarrier;
+        }
+        // 3. If carrying food, MUST deliver it
+        else if (carryingFoodAmount > 0)
         {
             currentJob = WorkerJob.FoodCollector;
         }
         else
         {
-            // 3. Check for Dig commands
+            // 4. Check for Dig commands
             if (DigCommandManager.HasTargetForAnt(this))
             {
                 currentJob = WorkerJob.Digger;
             }
-            // 4. Check for Food to collect
-            else if (targetFood != null && !targetFood.isDepleted)
+            // 5. Check for Eggs to carry (higher priority than food)
+            else if (targetEgg != null && !targetEgg.isPickedUp)
             {
-                currentJob = WorkerJob.FoodCollector;
+                currentJob = WorkerJob.EggCarrier;
             }
             else
             {
-                // Try to find food, otherwise idle
-                FindFood();
-                currentJob = (targetFood != null) ? WorkerJob.FoodCollector : WorkerJob.Idle;
+                // Try to find an egg first
+                FindEgg();
+                if (targetEgg != null)
+                {
+                    currentJob = WorkerJob.EggCarrier;
+                }
+                else
+                {
+                    // Then try to find food
+                    if (targetFood != null && !targetFood.isDepleted)
+                    {
+                        currentJob = WorkerJob.FoodCollector;
+                    }
+                    else
+                    {
+                        FindFood();
+                        currentJob = (targetFood != null) ? WorkerJob.FoodCollector : WorkerJob.Idle;
+                    }
+                }
             }
         }
 
@@ -141,6 +167,9 @@ public class Ant : MonoBehaviour
         {
             case WorkerJob.Digger:
                 DiggerBehavior();
+                break;
+            case WorkerJob.EggCarrier:
+                EggCarrierBehavior();
                 break;
             case WorkerJob.FoodCollector:
                 FoodCollectorBehavior();
@@ -516,6 +545,105 @@ public class Ant : MonoBehaviour
         else
         {
             FollowPathTo(storagePos);
+        }
+    }
+
+    // ───────────────────────────────────────
+    // EGG CARRIER BEHAVIOR
+    // ───────────────────────────────────────
+    void EggCarrierBehavior()
+    {
+        // State A: Delivering egg to nursery
+        if (carriedEgg != null)
+        {
+            DeliverEggToNursery();
+            return;
+        }
+
+        // State B: Find egg
+        if (targetEgg == null || targetEgg.isPickedUp)
+        {
+            FindEgg();
+        }
+
+        // State C: Move to egg & pick up
+        if (targetEgg != null && !targetEgg.isPickedUp)
+        {
+            float dist = Vector2.Distance(transform.position, targetEgg.transform.position);
+            if (dist < 0.5f)
+            {
+                PickUpEgg();
+            }
+            else
+            {
+                FollowPathTo(targetEgg.transform.position);
+            }
+        }
+        else
+        {
+            // No egg found, fall back to idle
+            currentJob = WorkerJob.Idle;
+        }
+    }
+
+    void FindEgg()
+    {
+        targetEgg = null;
+        if (EggManager.Instance == null) return;
+
+        float bestDist = float.MaxValue;
+        float searchRadius = 20f;
+
+        foreach (Egg e in EggManager.Instance.availableEggs)
+        {
+            if (e != null && !e.isPickedUp)
+            {
+                float d = Vector2.Distance(transform.position, e.transform.position);
+                if (d <= searchRadius && d < bestDist)
+                {
+                    bestDist = d;
+                    targetEgg = e;
+                }
+            }
+        }
+    }
+
+    void PickUpEgg()
+    {
+        if (targetEgg == null || targetEgg.isPickedUp) return;
+
+        targetEgg.PickUp();
+        carriedEgg = targetEgg;
+        targetEgg = null;
+        currentPath = null;
+
+        // Parent the egg to the ant so it visually follows
+        carriedEgg.transform.SetParent(transform);
+        carriedEgg.transform.localPosition = new Vector3(0, 0.3f, 0);
+    }
+
+    void DeliverEggToNursery()
+    {
+        if (Nursery.Instance == null)
+        {
+            // No nursery, just idle with the egg
+            currentJob = WorkerJob.Idle;
+            return;
+        }
+
+        Vector2 nurseryPos = Nursery.Instance.transform.position;
+        float dist = Vector2.Distance(transform.position, nurseryPos);
+
+        if (dist < 1.0f)
+        {
+            // Deliver!
+            Nursery.Instance.ReceiveEgg(carriedEgg);
+            carriedEgg = null;
+            currentPath = null;
+        }
+        else
+        {
+            FollowPathTo(nurseryPos);
         }
     }
 

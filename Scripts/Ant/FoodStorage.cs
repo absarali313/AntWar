@@ -26,6 +26,17 @@ public class FoodStorage : MonoBehaviour
         // Here we could trigger Queen consumption or population growth logic in the future
     }
 
+    public bool Consume(int amount)
+    {
+        if (totalFood >= amount)
+        {
+            totalFood -= amount;
+            UpdateVisual();
+            return true;
+        }
+        return false;
+    }
+
     private void UpdateVisual()
     {
         // Calculate how close we are to the max food limit

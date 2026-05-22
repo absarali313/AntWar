@@ -1,10 +1,15 @@
 using UnityEngine;
-
+using TMPro;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     public float survivalTime = 0f;
+
+    [Header("UI Elements")]
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI foodText;
+    public TextMeshProUGUI eggCountText;
 
     void Awake()
     {
@@ -14,33 +19,27 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         survivalTime += Time.deltaTime;
-    }
 
-    void OnGUI()
-    {
-        // Simple built-in UI for prototyping
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 24;
-        style.normal.textColor = Color.white;
-        style.fontStyle = FontStyle.Bold;
-
-        // Draw background box for readability
-        GUI.Box(new Rect(10, 10, 200, 80), "");
-
-        // Show Survival Time
-        int minutes = Mathf.FloorToInt(survivalTime / 60F);
-        int seconds = Mathf.FloorToInt(survivalTime - minutes * 60);
-        string timeStr = string.Format("{0:00}:{1:00}", minutes, seconds);
-        GUI.Label(new Rect(20, 20, 200, 30), "Time: " + timeStr, style);
-
-        // Show Food Count
-        int foodCount = 0;
-        if (FoodStorage.Instance != null)
+        // Update Survival Time UI
+        if (timeText != null)
         {
-            foodCount = FoodStorage.Instance.totalFood;
+            int minutes = Mathf.FloorToInt(survivalTime / 60F);
+            int seconds = Mathf.FloorToInt(survivalTime - minutes * 60);
+            timeText.text = string.Format("Time: {0:00}:{1:00}", minutes, seconds);
         }
-        
-        style.normal.textColor = new Color(0.8f, 0.9f, 0.3f); // Yellow/Green for food
-        GUI.Label(new Rect(20, 50, 200, 30), "Food: " + foodCount, style);
+
+        // Update Food Count UI
+        if (foodText != null && FoodStorage.Instance != null)
+        {
+            foodText.text = "Food: " + FoodStorage.Instance.totalFood;
+        }
+
+        // Update Egg Count UI
+        if (eggCountText != null)
+        {
+            int waiting = (EggManager.Instance != null) ? EggManager.Instance.availableEggs.Count : 0;
+            int incubating = (Nursery.Instance != null) ? Nursery.Instance.eggsIncubating : 0;
+            eggCountText.text = "Eggs: " + waiting + " | Hatching: " + incubating;
+        }
     }
 }
