@@ -7,11 +7,11 @@ public class StarterHiveBuilder : MonoBehaviour
     public GameObject queenPrefab;
     
     [Header("Economy Prefabs")]
-    public GameObject foodStoragePrefab;
+    public GameObject resourceStoragePrefab;
     public GameObject nurseryPrefab;
 
     [Header("Economy Positions")]
-    public Vector3 foodStoragePosition = new Vector3(-3.163f, 0.73f, 0f);
+    public Vector3 resourceStoragePosition = new Vector3(-3.163f, 0.73f, 0f);
     public Vector3 nurseryPosition = new Vector3(3.0f, 0.73f, 0f);
 
     public int chamberSize = 3;
@@ -151,14 +151,14 @@ public class StarterHiveBuilder : MonoBehaviour
 
     void SetupEconomy()
     {
-        // 1. Create Food Storage near Queen
-        if (foodStoragePrefab != null)
+        // 1. Create Resource Storage near Queen
+        if (resourceStoragePrefab != null)
         {
-            Instantiate(foodStoragePrefab, foodStoragePosition, Quaternion.identity);
+            Instantiate(resourceStoragePrefab, resourceStoragePosition, Quaternion.identity);
         }
         else
         {
-            Debug.LogWarning("FoodStorage cannot be spawned: foodStoragePrefab is missing!");
+            Debug.LogWarning("ResourceStorage cannot be spawned: resourceStoragePrefab is missing!");
         }
 
         // 2. Create Nursery
@@ -171,14 +171,15 @@ public class StarterHiveBuilder : MonoBehaviour
             Debug.LogWarning("Nursery cannot be spawned: nurseryPrefab is missing!");
         }
 
-        // 2. Start Food Spawner (Now expected to be placed manually in the scene, e.g., on GameManager)
-        if (FoodSpawner.Instance != null)
+        // 3. Start Resource Spawner (Now expected to be placed manually in the scene, e.g., on GameManager)
+        if (ResourceSpawner.Instance != null)
         {
-            FoodSpawner.Instance.SpawnInitialFood();
+            // Initial spawns are handled in ResourceSpawner.Start()
+            Debug.Log("ResourceSpawner found and initialized.");
         }
         else
         {
-            Debug.LogWarning("FoodSpawner instance not found! Please attach the FoodSpawner script to your GameManager.");
+            Debug.LogWarning("ResourceSpawner instance not found! Please attach the ResourceSpawner script to your GameManager.");
         }
     }
 }

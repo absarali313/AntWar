@@ -12,6 +12,8 @@ public class DigCommandManager : MonoBehaviour
 
     public static bool HasTargets => targets.Count > 0;
 
+    public int targetCount => targets.Count;
+
     void Awake()
     {
         Instance = this;

@@ -69,8 +69,8 @@ public class Queen : MonoBehaviour
         EggProductionConfig config = GetConfig(type);
         if (config == null) return false;
         
-        if (FoodStorage.Instance == null) return false;
-        return FoodStorage.Instance.totalFood >= config.foodCost;
+        if (ResourceStorage.Instance == null) return false;
+        return ResourceStorage.Instance.Get(ResourceType.Food) >= config.foodCost;
     }
 
     public void StartLayingEgg(AntType type)
@@ -84,7 +84,7 @@ public class Queen : MonoBehaviour
             return;
         }
 
-        if (FoodStorage.Instance != null && FoodStorage.Instance.Consume(config.foodCost))
+        if (ResourceStorage.Instance != null && ResourceStorage.Instance.Consume(ResourceType.Food, config.foodCost))
         {
             StartCoroutine(LayEggRoutine(type, config.layingTime));
         }

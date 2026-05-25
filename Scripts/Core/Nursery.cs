@@ -44,11 +44,9 @@ public class Nursery : MonoBehaviour
             return;
         }
 
-        // Spawn near the nursery
         Vector2 offset = Random.insideUnitCircle * 0.5f;
         GameObject antObj = Instantiate(antPrefab, (Vector2)transform.position + offset, Quaternion.identity);
 
-        // Configure based on type (for future expansion with Soldier etc.)
         Ant ant = antObj.GetComponent<Ant>();
         if (ant != null)
         {
@@ -56,6 +54,18 @@ public class Nursery : MonoBehaviour
             {
                 case AntType.Worker:
                     ant.role = AntRole.Worker;
+                    break;
+                case AntType.Soldier:
+                    ant.role = AntRole.Soldier;
+                    break;
+                case AntType.Scout:
+                    ant.role = AntRole.Scout;
+                    break;
+                case AntType.Builder:
+                    ant.role = AntRole.Builder;
+                    break;
+                case AntType.Nurse:
+                    ant.role = AntRole.Nurse;
                     break;
             }
         }

@@ -183,4 +183,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 520d968b18b004836a94ca2d1a1fc36e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ant
-  speed: 2
+  role: 0
+  displayJob: 1
+  assignedDuty: 0
+  speed: 1
+  visionRadius: 3
+  currentPath: []
+  pathIndex: 0
+  pathCooldown: 0
+  pathRefreshRate: 1
+  idOffset: 0
+  wanderTarget: {x: 0, y: 0}
+  wanderTimer: 0
+  digCooldown: 0
+  digRate: 0.4
+  targetFood: {fileID: 0}
+  carryingFoodAmount: 0
+  carryCapacity: 1
+  targetWater: {fileID: 0}
+  carryingWaterAmount: 0
+  targetMineral: {fileID: 0}
+  carryingMineralAmount: 0
+  carriedEgg: {fileID: 0}
+  targetEgg: {fileID: 0}
+  wantsToReturn: 0
+  isPinned: 0

@@ -1,10 +1,5 @@
 using UnityEngine;
 
-public enum AntType
-{
-    Worker
-}
-
 public class Egg : MonoBehaviour
 {
     public AntType type = AntType.Worker;
